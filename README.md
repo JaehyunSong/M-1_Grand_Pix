@@ -17,3 +17,7 @@
 |Score10|決勝における評価||
 |Score3|最終決戦における評価|最終決戦に進出しなかったコンビは欠損値|
 |No_Reviewer|審査委員数||
+
+### Source
+
+Wikipedia「[M-1グランプリ](https://ja.wikipedia.org/wiki/M-1%E3%82%B0%E3%83%A9%E3%83%B3%E3%83%97%E3%83%AA)」
