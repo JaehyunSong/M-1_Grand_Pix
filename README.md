@@ -34,12 +34,15 @@ Wikipedia「[M-1グランプリ](https://ja.wikipedia.org/wiki/M-1%E3%82%B0%E3%8
 library(tidyverse)
 library(prediction)
 
-df     <- read_csv("M1_Grand_Pix.csv")
+df <- read_csv("M1_Grand_Pix.csv")
+df <- df %>%
+  mutate(Zombie = if_else(Catchphrase == "（敗者復活）", 1, 0))
+  
 bar_df <- df %>%
   group_by(Order10) %>%
   summarise(Mean_Final = mean(Final))
 
-fit <- glm(Final ~ Order10 + Since + No_Finals, 
+fit <- glm(Final ~ Order10 + Since + No_Finals + Zombie, 
            data = df, family = binomial("logit"))
 
 summary(fit)
@@ -47,27 +50,28 @@ summary(fit)
 
 ```
 Call:
-glm(formula = Final ~ Order10 + Since + No_Finals, family = binomial("logit"), 
+glm(formula = Final ~ Order10 + Since + No_Finals + Zombie, family = binomial("logit"), 
     data = df)
 
 Deviance Residuals: 
     Min       1Q   Median       3Q      Max  
--1.5954  -0.8731  -0.5989   1.1249   2.0307  
+-1.5656  -0.8580  -0.5963   1.0818   2.0285  
 
 Coefficients:
-            Estimate Std. Error z value Pr(>|z|)    
-(Intercept) 54.84634   62.57057   0.877 0.380730    
-Order10      0.24927    0.07193   3.466 0.000529 ***
-Since       -0.02863    0.03125  -0.916 0.359711    
-No_Finals    0.33850    0.13579   2.493 0.012672 *  
+            Estimate Std. Error z value Pr(>|z|)   
+(Intercept) 50.00850   62.98874   0.794  0.42724   
+Order10      0.23348    0.07487   3.118  0.00182 **
+Since       -0.02619    0.03146  -0.832  0.40525   
+No_Finals    0.33450    0.13499   2.478  0.01321 * 
+Zombie       0.41894    0.59718   0.702  0.48297   
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 (Dispersion parameter for binomial family taken to be 1)
 
     Null deviance: 198.00  on 158  degrees of freedom
-Residual deviance: 178.63  on 155  degrees of freedom
-AIC: 186.63
+Residual deviance: 178.14  on 154  degrees of freedom
+AIC: 188.14
 
 Number of Fisher Scoring iterations: 4
 ```
