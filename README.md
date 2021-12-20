@@ -36,16 +36,13 @@ library(prediction)
 
 df <- read_csv("M1_Grand_Pix.csv")
 df <- df %>%
-  mutate(Zombie = if_else(Catchphrase == "（敗者復活）", 1, 0))
+  mutate(Zombie = if_else(Catchphrase == "（敗者復活）", 1, 0),
+         Winner = if_else(Rank == 1, 1, 0))
   
-bar_df <- df %>%
-  group_by(Order10) %>%
-  summarise(Mean_Final = mean(Final))
-
-fit <- glm(Final ~ Order10 + Since + No_Finals + Zombie, 
+fit1 <- glm(Final ~ Order10 + Since + No_Finals + Zombie, 
            data = df, family = binomial("logit"))
 
-summary(fit)
+summary(fit1)
 ```
 
 ```
@@ -77,12 +74,16 @@ Number of Fisher Scoring iterations: 4
 ```
 
 ```r
-fit %>% 
+bar_df1 <- df %>%
+  group_by(Order10) %>%
+  summarise(Mean_Final = mean(Final))
+
+fit1 %>% 
   prediction(at = list(Order10 = 1:10)) %>%
   summary() %>%
   rename("Order" = "at(Order10)") %>%
   ggplot() +
-  geom_bar(data = bar_df, aes(x = Order10, y = Mean_Final), 
+  geom_bar(data = bar_df1, aes(x = Order10, y = Mean_Final), 
            stat = "Identity", fill = "gray70") +
   geom_pointrange(aes(x = Order, y = Prediction, 
                       ymin = lower, ymax = upper), size = 1.2) +
@@ -96,7 +97,70 @@ fit %>%
         text = element_text(size = 16))
 ```
 
-![サンプル](/Figs/M1.png)
+![サンプル](/Figs/M1_1.png)
+
+```r
+fit2 <- glm(Winner ~ Order3 + Since + No_Finals + Zombie, 
+            data = df, family = binomial("logit"))
+
+summary(fit2)
+```
+
+```
+Call:
+glm(formula = Winner ~ Order3 + Since + No_Finals + Zombie, family = binomial("logit"), 
+    data = df)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-1.5070  -0.8267  -0.5773   1.0000   2.1761  
+
+Coefficients:
+            Estimate Std. Error z value Pr(>|z|)  
+(Intercept) 190.8690   123.1133   1.550   0.1211  
+Order3        0.9866     0.4408   2.238   0.0252 *
+Since        -0.0964     0.0616  -1.565   0.1176  
+No_Finals    -0.2900     0.2218  -1.307   0.1911  
+Zombie       -1.3780     1.0050  -1.371   0.1703  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 64.104  on 49  degrees of freedom
+Residual deviance: 55.176  on 45  degrees of freedom
+  (109 observations deleted due to missingness)
+AIC: 65.176
+
+Number of Fisher Scoring iterations: 4
+```
+
+```r
+bar_df2 <- df %>%
+  group_by(Order3) %>%
+  summarise(Mean_Winner = mean(Winner)) %>%
+  drop_na()
+
+fit2 %>% 
+  prediction(at = list(Order3 = 1:3)) %>%
+  summary() %>%
+  rename("Order" = "at(Order3)") %>%
+  ggplot() +
+  geom_bar(data = bar_df2, aes(x = Order3, y = Mean_Winner), 
+           stat = "Identity", fill = "gray70") +
+  geom_pointrange(aes(x = Order, y = Prediction, 
+                      ymin = lower, ymax = upper), size = 1.2) +
+  geom_line(aes(x = Order, y = Prediction), size = 1.2) +
+  scale_x_continuous(breaks = 1:10, labels = 1:10) +
+  coord_cartesian(ylim = c(0, 1)) +
+  labs(x = "出場順番", y = "優勝する確率",
+       title = "M-1グランプリ (第1回〜第17回)") +
+  theme_minimal(base_family = "HiraKakuProN-W3") +
+  theme(panel.grid.minor = element_blank(),
+        text = element_text(size = 16))
+```
+
+![サンプル](/Figs/M1_2.png)
 
 ---
 
