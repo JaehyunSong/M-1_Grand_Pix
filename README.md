@@ -39,7 +39,41 @@ bar_df <- df %>%
   group_by(Order10) %>%
   summarise(Mean_Final = mean(Final))
 
-glm(Final ~ Order10, data = df, family = binomial("logit")) %>% 
+fit <- glm(Final ~ Order10 + Since + No_Finals, 
+           data = df, family = binomial("logit"))
+
+summary(fit)
+```
+
+```
+Call:
+glm(formula = Final ~ Order10 + Since + No_Finals, family = binomial("logit"), 
+    data = df)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-1.5954  -0.8731  -0.5989   1.1249   2.0307  
+
+Coefficients:
+            Estimate Std. Error z value Pr(>|z|)    
+(Intercept) 54.84634   62.57057   0.877 0.380730    
+Order10      0.24927    0.07193   3.466 0.000529 ***
+Since       -0.02863    0.03125  -0.916 0.359711    
+No_Finals    0.33850    0.13579   2.493 0.012672 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 198.00  on 158  degrees of freedom
+Residual deviance: 178.63  on 155  degrees of freedom
+AIC: 186.63
+
+Number of Fisher Scoring iterations: 4
+```
+
+```r
+fit %>% 
   prediction(at = list(Order10 = 1:10)) %>%
   summary() %>%
   rename("Order" = "at(Order10)") %>%
