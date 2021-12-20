@@ -34,35 +34,30 @@ Wikipedia「[M-1グランプリ](https://ja.wikipedia.org/wiki/M-1%E3%82%B0%E3%8
 
 ```r
 library(tidyverse)
+library(prediction)
 
 df     <- read_csv("M1_Grand_Pix.csv")
 bar_df <- df %>%
-    group_by(Order10) %>%
-    summarise(Mean_Final = mean(Final))
+  group_by(Order10) %>%
+  summarise(Mean_Final = mean(Final))
 
-df %>% 
-    glm(Final ~ Order10, data = ., family = binomial("logit")) %>% 
-    predict(newdata = data.frame(Order10 = 1:10), se.fit = TRUE) %>% 
-    as.data.frame() %>% 
-    mutate(ll    = fit + qnorm(0.025) * se.fit, 
-           ul    = fit + qnorm(0.975) * se.fit,
-           fit   = 1 / (1 + exp(-fit)), 
-           ll    = 1 / (1 + exp(-ll)), 
-           ul    = 1 / (1 + exp(-ul)),
-           Order = 1:10) %>% 
-    select(Order, fit, ll, ul) %>%
-    ggplot() +
-    geom_bar(data = bar_df, aes(x = Order10, y = Mean_Final), 
-             stat = "Identity", fill = "gray70") +
-    geom_pointrange(aes(x = Order, y = fit, ymin = ll, ymax = ul), size = 1.2) +
-    geom_line(aes(x = Order, y = fit), size = 1.2) +
-    scale_x_continuous(breaks = 1:10, labels = 1:10) +
-    coord_cartesian(ylim = c(0, 1)) +
-    labs(x = "出場順番", y = "最終決戦へ進出する確率",
-         title = "M-1グランプリ (第1回〜第16回)") +
-    theme_minimal(base_family = "HiraKakuProN-W3") +
-    theme(panel.grid.minor = element_blank(),
-          text = element_text(size = 16))
+glm(Final ~ Order10, data = df, family = binomial("logit")) %>% 
+  prediction(at = list(Order10 = 1:10)) %>%
+  summary() %>%
+  rename("Order" = "at(Order10)") %>%
+  ggplot() +
+  geom_bar(data = bar_df, aes(x = Order10, y = Mean_Final), 
+           stat = "Identity", fill = "gray70") +
+  geom_pointrange(aes(x = Order, y = Prediction, 
+                      ymin = lower, ymax = upper), size = 1.2) +
+  geom_line(aes(x = Order, y = Prediction), size = 1.2) +
+  scale_x_continuous(breaks = 1:10, labels = 1:10) +
+  coord_cartesian(ylim = c(0, 1)) +
+  labs(x = "出場順番", y = "最終決戦へ進出する確率",
+       title = "M-1グランプリ (第1回〜第17回)") +
+  theme_minimal(base_family = "HiraKakuProN-W3") +
+  theme(panel.grid.minor = element_blank(),
+        text = element_text(size = 16))
 ```
 
 ![サンプル](/Figs/M1.png)
