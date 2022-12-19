@@ -9,6 +9,7 @@
 |Year|開催年||
 |Rank|最終順位||
 |Name|コンビ名||
+|Company|所属事務所名||
 |Entry_No|エントリー番号||
 |Since|コンビ結成年||
 |No_Finals|これまでの決勝進出回数|当該年を除く|
@@ -52,23 +53,23 @@ glm(formula = Final ~ Order10 + Since + No_Finals + Zombie, family = binomial("l
 
 Deviance Residuals: 
     Min       1Q   Median       3Q      Max  
--1.5656  -0.8580  -0.5963   1.0818   2.0285  
+-1.5994  -0.8690  -0.6032   1.1086   2.0139  
 
 Coefficients:
-            Estimate Std. Error z value Pr(>|z|)   
-(Intercept) 50.00850   62.98874   0.794  0.42724   
-Order10      0.23348    0.07487   3.118  0.00182 **
-Since       -0.02619    0.03146  -0.832  0.40525   
-No_Finals    0.33450    0.13499   2.478  0.01321 * 
-Zombie       0.41894    0.59718   0.702  0.48297   
+            Estimate Std. Error z value Pr(>|z|)    
+(Intercept) 58.15103   57.45438   1.012 0.311478    
+Order10      0.24337    0.07199   3.380 0.000724 ***
+Since       -0.03026    0.02869  -1.055 0.291550    
+No_Finals    0.34455    0.13553   2.542 0.011016 *  
+Zombie       0.12551    0.55866   0.225 0.822239    
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 (Dispersion parameter for binomial family taken to be 1)
 
-    Null deviance: 198.00  on 158  degrees of freedom
-Residual deviance: 178.14  on 154  degrees of freedom
-AIC: 188.14
+    Null deviance: 210.22  on 168  degrees of freedom
+Residual deviance: 189.49  on 164  degrees of freedom
+AIC: 199.49
 
 Number of Fisher Scoring iterations: 4
 ```
@@ -113,24 +114,24 @@ glm(formula = Winner ~ Order3 + Since + No_Finals + Zombie, family = binomial("l
 
 Deviance Residuals: 
     Min       1Q   Median       3Q      Max  
--1.5070  -0.8267  -0.5773   1.0000   2.1761  
+-1.4283  -0.8374  -0.6557   1.0890   2.1613  
 
 Coefficients:
-            Estimate Std. Error z value Pr(>|z|)  
-(Intercept) 190.8690   123.1133   1.550   0.1211  
-Order3        0.9866     0.4408   2.238   0.0252 *
-Since        -0.0964     0.0616  -1.565   0.1176  
-No_Finals    -0.2900     0.2218  -1.307   0.1911  
-Zombie       -1.3780     1.0050  -1.371   0.1703  
+             Estimate Std. Error z value Pr(>|z|)  
+(Intercept) 179.13728  113.77383   1.575   0.1154  
+Order3        0.77460    0.41079   1.886   0.0593 .
+Since        -0.09031    0.05691  -1.587   0.1125  
+No_Finals    -0.28788    0.22062  -1.305   0.1919  
+Zombie       -1.29609    0.98143  -1.321   0.1866  
 ---
 Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 (Dispersion parameter for binomial family taken to be 1)
 
-    Null deviance: 64.104  on 49  degrees of freedom
-Residual deviance: 55.176  on 45  degrees of freedom
-  (109 observations deleted due to missingness)
-AIC: 65.176
+    Null deviance: 67.923  on 52  degrees of freedom
+Residual deviance: 60.598  on 48  degrees of freedom
+  (116 observations deleted due to missingness)
+AIC: 70.598
 
 Number of Fisher Scoring iterations: 4
 ```
@@ -166,5 +167,6 @@ fit2 %>%
 
 ## 更新履歴
 
+* 2022年12月19日: 第18回 (2022年)のデータを追加、所属事務所名を追加
 * 2021年12月20日: 第17回 (2021年)のデータを追加
 * 2020年12月21年: 公開
