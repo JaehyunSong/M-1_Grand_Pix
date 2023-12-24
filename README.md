@@ -36,7 +36,7 @@ library(tidyverse)
 library(prediction)
 
 df <- read_csv("M1_Grand_Pix.csv")
-df <- df %>%
+df <- df |>
   mutate(Zombie = if_else(Catchphrase == "（敗者復活）", 1, 0),
          Winner = if_else(Rank == 1, 1, 0))
   
@@ -51,48 +51,42 @@ Call:
 glm(formula = Final ~ Order10 + Since + No_Finals + Zombie, family = binomial("logit"), 
     data = df)
 
-Deviance Residuals: 
-    Min       1Q   Median       3Q      Max  
--1.5994  -0.8690  -0.6032   1.1086   2.0139  
-
 Coefficients:
-            Estimate Std. Error z value Pr(>|z|)    
-(Intercept) 58.15103   57.45438   1.012 0.311478    
-Order10      0.24337    0.07199   3.380 0.000724 ***
-Since       -0.03026    0.02869  -1.055 0.291550    
-No_Finals    0.34455    0.13553   2.542 0.011016 *  
-Zombie       0.12551    0.55866   0.225 0.822239    
+            Estimate Std. Error z value Pr(>|z|)   
+(Intercept) 42.86406   52.81898   0.812  0.41706   
+Order10      0.19528    0.06671   2.928  0.00342 **
+Since       -0.02248    0.02636  -0.853  0.39382   
+No_Finals    0.32239    0.13046   2.471  0.01347 * 
+Zombie       0.18055    0.53886   0.335  0.73758   
 ---
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+Signif. codes:  
+0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 (Dispersion parameter for binomial family taken to be 1)
 
-    Null deviance: 210.22  on 168  degrees of freedom
-Residual deviance: 189.49  on 164  degrees of freedom
-AIC: 199.49
+    Null deviance: 222.45  on 178  degrees of freedom
+Residual deviance: 205.76  on 174  degrees of freedom
+AIC: 215.76
 
 Number of Fisher Scoring iterations: 4
 ```
 
 ```r
-bar_df1 <- df %>%
-  group_by(Order10) %>%
+bar_df1 <- df |>
+  group_by(Order10) |>
   summarise(Mean_Final = mean(Final))
 
-fit1 %>% 
-  prediction(at = list(Order10 = 1:10)) %>%
-  summary() %>%
-  rename("Order" = "at(Order10)") %>%
-  ggplot() +
+fit1 |> 
+  predictions(newdata = datagrid(Order10 = 1:10)) |>
+  ggplot(aes(x = Order10, y = estimate)) +
   geom_bar(data = bar_df1, aes(x = Order10, y = Mean_Final), 
            stat = "Identity", fill = "gray70") +
-  geom_pointrange(aes(x = Order, y = Prediction, 
-                      ymin = lower, ymax = upper), size = 1.2) +
-  geom_line(aes(x = Order, y = Prediction), size = 1.2) +
+  geom_pointrange(aes(ymin = conf.low, ymax = conf.high)) +
+  geom_line() +
   scale_x_continuous(breaks = 1:10, labels = 1:10) +
   coord_cartesian(ylim = c(0, 1)) +
   labs(x = "出場順番", y = "最終決戦へ進出する確率",
-       title = "M-1グランプリ (第1回〜第17回)") +
+       title = "M-1グランプリ (第1回〜第19回)") +
   theme_minimal(base_family = "HiraKakuProN-W3") +
   theme(panel.grid.minor = element_blank(),
         text = element_text(size = 16))
@@ -112,50 +106,41 @@ Call:
 glm(formula = Winner ~ Order3 + Since + No_Finals + Zombie, family = binomial("logit"), 
     data = df)
 
-Deviance Residuals: 
-    Min       1Q   Median       3Q      Max  
--1.4283  -0.8374  -0.6557   1.0890   2.1613  
-
 Coefficients:
-             Estimate Std. Error z value Pr(>|z|)  
-(Intercept) 179.13728  113.77383   1.575   0.1154  
-Order3        0.77460    0.41079   1.886   0.0593 .
-Since        -0.09031    0.05691  -1.587   0.1125  
-No_Finals    -0.28788    0.22062  -1.305   0.1919  
-Zombie       -1.29609    0.98143  -1.321   0.1866  
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+            Estimate Std. Error z value Pr(>|z|)
+(Intercept) 126.1479   100.0296   1.261    0.207
+Order3        0.5540     0.3815   1.452    0.146
+Since        -0.0636     0.0500  -1.272    0.203
+No_Finals    -0.3187     0.2278  -1.399    0.162
+Zombie       -1.1556     0.9552  -1.210    0.226
 
 (Dispersion parameter for binomial family taken to be 1)
 
-    Null deviance: 67.923  on 52  degrees of freedom
-Residual deviance: 60.598  on 48  degrees of freedom
-  (116 observations deleted due to missingness)
-AIC: 70.598
+    Null deviance: 71.743  on 55  degrees of freedom
+Residual deviance: 66.207  on 51  degrees of freedom
+  (123 observations deleted due to missingness)
+AIC: 76.207
 
 Number of Fisher Scoring iterations: 4
 ```
 
 ```r
-bar_df2 <- df %>%
-  group_by(Order3) %>%
-  summarise(Mean_Winner = mean(Winner)) %>%
+bar_df2 <- df |>
+  group_by(Order3) |>
+  summarise(Mean_Winner = mean(Winner)) |>
   drop_na()
 
-fit2 %>% 
-  prediction(at = list(Order3 = 1:3)) %>%
-  summary() %>%
-  rename("Order" = "at(Order3)") %>%
-  ggplot() +
+fit2 |> 
+  predictions(newdata = datagrid(Order3 = 1:3)) |>
+  ggplot(aes(x = Order3, y = estimate)) +
   geom_bar(data = bar_df2, aes(x = Order3, y = Mean_Winner), 
            stat = "Identity", fill = "gray70") +
-  geom_pointrange(aes(x = Order, y = Prediction, 
-                      ymin = lower, ymax = upper), size = 1.2) +
-  geom_line(aes(x = Order, y = Prediction), size = 1.2) +
+  geom_pointrange(aes(ymin = conf.low, ymax = conf.high)) +
+  geom_line() +
   scale_x_continuous(breaks = 1:10, labels = 1:10) +
   coord_cartesian(ylim = c(0, 1)) +
   labs(x = "出場順番", y = "優勝する確率",
-       title = "M-1グランプリ (第1回〜第17回)") +
+       title = "M-1グランプリ (第1回〜第19回)") +
   theme_minimal(base_family = "HiraKakuProN-W3") +
   theme(panel.grid.minor = element_blank(),
         text = element_text(size = 16))
@@ -167,6 +152,7 @@ fit2 %>%
 
 ## 更新履歴
 
+* 2023年12月24日: 第19回 (2023年)のデータを追加
 * 2022年12月19日: 第18回 (2022年)のデータを追加、所属事務所名を追加
 * 2021年12月20日: 第17回 (2021年)のデータを追加
 * 2020年12月21年: 公開
