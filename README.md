@@ -33,7 +33,7 @@ Wikipedia「[M-1グランプリ](https://ja.wikipedia.org/wiki/M-1%E3%82%B0%E3%8
 
 ```r
 library(tidyverse)
-library(prediction)
+library(marginaleffects)
 
 df <- read_csv("M1_Grand_Pix.csv")
 df <- df |>
